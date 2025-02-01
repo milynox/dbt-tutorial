@@ -1,0 +1,6 @@
+-- {% macro get_columns_in_relation_sql(relation) %}
+-- select column_name
+-- from information_schema.columns
+-- where table_schema = {{ relation.schema }}
+-- and table_name = {{ relation.name }}
+-- {% endmacro %}
