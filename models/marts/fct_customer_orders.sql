@@ -27,7 +27,8 @@ with
             completed_payments.total_amount_paid,
             completed_payments.payment_finalized_date,
             customers.customer_first_name,
-            customers.customer_last_name
+            customers.customer_last_name,
+            customers.full_name
         from orders
         left join completed_payments on orders.order_id = completed_payments.order_id
         left join customers on orders.customer_id = customers.customer_id
@@ -36,7 +37,17 @@ with
     -- Final CTEs
     final as (
         select
-            paid_orders.*,
+
+            paid_orders.order_id,
+            paid_orders.customer_id,
+            paid_orders.order_placed_at,
+            paid_orders.order_status,
+            paid_orders.total_amount_paid,
+            paid_orders.payment_finalized_date,
+            paid_orders.customer_first_name,
+            paid_orders.customer_last_name,
+            paid_orders.full_name,
+
             row_number() over (order by paid_orders.order_id) as transaction_seq,
             row_number() over (
                 partition by customer_id order by paid_orders.order_id
