@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: stripe
+    database: databrick_learning
+    schema: jaffle_shop_dev
+    tables:
+      - name: payments
