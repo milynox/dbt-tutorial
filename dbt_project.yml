@@ -36,8 +36,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 # using the `{{ config(...) }}` macro.
 
 models:
-  dbt-tutorial:
+  dbt_tutorial:
     marts:
       +materialized: table
-    legacy:
-      +materialized: table
+
+# models materialization as follow
+# models
+#  <list of projects>, refer to the <name> of this project
+# Then get all the folder inside the path models, also defined above.
