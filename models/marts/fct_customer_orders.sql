@@ -3,35 +3,8 @@ with
     -- See all the tables used in this file at the top
     customers as (select * from {{ ref('stg_jaffle_shop__customers') }}),
 
-    orders as (select * from {{ ref('stg_jaffle_shop__orders') }}),
-
-    payments as (select * from {{ ref('stg_stripe__payments') }}),
-
-    -- Logical CTEs
-    completed_payments as (  -- total amount has been paid for an order
-        select
-            order_id,
-            max(payment_created_at) as payment_finalized_date,
-            sum(payment_amount) as total_amount_paid
-        from payments
-        where payment_status <> 'fail'
-        group by 1
-    ),
-
     paid_orders as (  -- detail info of these orders 
-        select
-            orders.order_id,
-            orders.customer_id,
-            orders.order_placed_at,
-            orders.order_status,
-            completed_payments.total_amount_paid,
-            completed_payments.payment_finalized_date,
-            customers.customer_first_name,
-            customers.customer_last_name,
-            customers.full_name
-        from orders
-        left join completed_payments on orders.order_id = completed_payments.order_id
-        left join customers on orders.customer_id = customers.customer_id
+        select * from {{ ref('int_orders') }}
     ),
 
     -- Final CTEs
@@ -44,13 +17,13 @@ with
             paid_orders.order_status,
             paid_orders.total_amount_paid,
             paid_orders.payment_finalized_date,
-            paid_orders.customer_first_name,
-            paid_orders.customer_last_name,
-            paid_orders.full_name,
+            customers.customer_first_name,
+            customers.customer_last_name,
+            customers.customer_full_name,
 
             row_number() over (order by paid_orders.order_id) as transaction_seq,
             row_number() over (
-                partition by customer_id order by paid_orders.order_id
+                partition by paid_orders.customer_id order by paid_orders.order_id
             ) as customer_sales_seq,
 
             -- new vs returning customer for each customer
@@ -82,6 +55,7 @@ with
             ) as fdos
 
         from paid_orders
+        left join customers on paid_orders.customer_id = customers.customer_id
         order by paid_orders.order_id
     )
 

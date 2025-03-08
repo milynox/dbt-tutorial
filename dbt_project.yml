@@ -39,4 +39,5 @@ models:
   dbt_tutorial:
     # Applies to all files under models/example/
     models:
-      +materialized: table
+      marts:
+        +materialized: table
