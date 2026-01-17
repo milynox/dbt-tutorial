@@ -2,7 +2,6 @@ with
     -- Import CTEs
     -- See all the tables used in this file at the top
     customers as (select * from {{ ref('stg_jaffle_shop__customers') }}),
-
     paid_orders as (  -- detail info of these orders 
         select * from {{ ref('int_orders') }}
     ),
